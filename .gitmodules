@@ -1,0 +1,3 @@
+[submodule "SkytaleBot/discord-utils"]
+	path = SkytaleBot/discord-utils
+	url = https://github.com/Xwilarg/discord-utils

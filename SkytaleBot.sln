@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29020.237
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkytaleBot", "SkytaleBot\SkytaleBot.csproj", "{345EFB52-9027-4E03-BEB4-4B0F46CDC671}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{345EFB52-9027-4E03-BEB4-4B0F46CDC671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{345EFB52-9027-4E03-BEB4-4B0F46CDC671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{345EFB52-9027-4E03-BEB4-4B0F46CDC671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{345EFB52-9027-4E03-BEB4-4B0F46CDC671}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {37EDE4C1-FE42-4FD3-B5D0-AC583DB7DCE7}
+	EndGlobalSection
+EndGlobal
