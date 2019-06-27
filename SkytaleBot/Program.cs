@@ -17,9 +17,10 @@ namespace SkytaleBot
         public readonly DiscordSocketClient client;
         private readonly CommandService commands = new CommandService();
 
-        public DateTime StartTime { private set; get; }
         public static Program P { private set; get; }
-        public static Random Rand { private set; get; }
+        public DateTime StartTime { private set; get; }
+        public Random Rand { private set; get; }
+        public string PerspectiveApi { private set; get; }
 
         private Tuple<string, string> websiteCredentials;
 
@@ -51,6 +52,8 @@ namespace SkytaleBot
                 websiteCredentials = new Tuple<string, string>((string)json.websiteUrl, (string)json.websiteToken);
             else
                 websiteCredentials = null;
+            PerspectiveApi = json.perspectiveToken;
+
             await client.LoginAsync(TokenType.Bot, (string)json.botToken);
             StartTime = DateTime.Now;
             await client.StartAsync();
@@ -83,11 +86,19 @@ namespace SkytaleBot
             if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix("s.", ref pos))
             {
                 SocketCommandContext context = new SocketCommandContext(client, msg);
-                if ((await commands.ExecuteAsync(context, pos, null)).IsSuccess && websiteCredentials != null)
+                IResult res = await commands.ExecuteAsync(context, pos, null);
+                if (res.IsSuccess && websiteCredentials != null)
                 {
                     await Utils.WebsiteUpdate("SkytaleBot", websiteCredentials.Item1, websiteCredentials.Item2, "nbMsgs", "1");
                 }
+                else if (!res.IsSuccess)
+                {
+                    if (await Features.Moderation.MessageCheck.CheckMessageText(msg))
+                        await msg.AddReactionAsync(new Emoji("❗"));
+                }
             }
+            else if (await Features.Moderation.MessageCheck.CheckMessageText(msg))
+                await msg.AddReactionAsync(new Emoji("❗"));
         }
     }
 }
