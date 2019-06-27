@@ -21,6 +21,7 @@ namespace SkytaleBot
         public DateTime StartTime { private set; get; }
         public Random Rand { private set; get; }
         public string PerspectiveApi { private set; get; }
+        public Db.Db BotDb { private set; get; }
 
         private Tuple<string, string> websiteCredentials;
 
@@ -28,6 +29,7 @@ namespace SkytaleBot
         {
             P = this;
             Rand = new Random();
+            BotDb = new Db.Db();
             client = new DiscordSocketClient(new DiscordSocketConfig
             {
                 LogLevel = LogSeverity.Verbose,
@@ -38,6 +40,8 @@ namespace SkytaleBot
 
         private async Task MainAsync()
         {
+            await BotDb.InitAsync("SkytaleBot");
+
             client.MessageReceived += HandleCommandAsync;
             client.Connected += Connected;
 
