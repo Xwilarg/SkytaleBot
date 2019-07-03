@@ -48,6 +48,7 @@ namespace SkytaleBot
             client.JoinedGuild += GuildUpdate;
 
             await commands.AddModuleAsync<Modules.Communication>(null);
+            await commands.AddModuleAsync<Modules.Settings>(null);
 
             if (!File.Exists("Keys/Credentials.json"))
                 throw new FileNotFoundException("You must have a Credentials.json located in a 'Keys' folder near your executable.\nIt must contains a KeyValue botToken containing the token of your bot");
@@ -69,7 +70,7 @@ namespace SkytaleBot
 
         private async Task GuildUpdate(SocketGuild arg)
         {
-            await BotDb.InitGuild(arg.Id);
+            await BotDb.InitGuild(arg.Id.ToString());
         }
 
         private async Task Connected()

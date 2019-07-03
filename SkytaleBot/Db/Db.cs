@@ -24,7 +24,7 @@ namespace SkytaleBot.Db
                 await R.Db(dbName).TableCreate("Guilds").RunAsync(conn);
         }
 
-        public async Task InitGuild(ulong guildId)
+        public async Task InitGuild(string guildId)
         {
             string guildIdStr = guildId.ToString();
             if (await R.Db(dbName).Table("Guilds").GetAll(guildIdStr).Count().Eq(0).RunAsync<bool>(conn))
@@ -34,9 +34,17 @@ namespace SkytaleBot.Db
                     ).RunAsync(conn);
             }
         }
+
+        public async Task UpdateGuildReport(string guildId, string chanId)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId)
+                .With("Report", chanId)
+                ).RunAsync(conn);
+        }
+
         public async Task<string> GetGuild(ulong guildId)
         {
-            return (JsonConvert.SerializeObject(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn)));
+            return JsonConvert.SerializeObject(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn));
         }
 
         private RethinkDB R;
