@@ -44,6 +44,8 @@ namespace SkytaleBot
 
             client.MessageReceived += HandleCommandAsync;
             client.Connected += Connected;
+            client.GuildAvailable += GuildUpdate;
+            client.JoinedGuild += GuildUpdate;
 
             await commands.AddModuleAsync<Modules.Communication>(null);
 
@@ -63,6 +65,11 @@ namespace SkytaleBot
             await client.StartAsync();
 
             await Task.Delay(-1);
+        }
+
+        private async Task GuildUpdate(SocketGuild arg)
+        {
+            await BotDb.InitGuild(arg.Id);
         }
 
         private async Task Connected()
