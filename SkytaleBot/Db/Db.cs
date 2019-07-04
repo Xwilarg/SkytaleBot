@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SkytaleBot.Db
@@ -31,6 +32,8 @@ namespace SkytaleBot.Db
             {
                 await R.Db(dbName).Table("Guilds").Insert(R.HashMap("id", guildIdStr)
                     .With("Report", "None")
+                    .With("StaffRoles", "None")
+                    .With("AdminRoles", "None")
                     ).RunAsync(conn);
             }
         }
@@ -40,6 +43,36 @@ namespace SkytaleBot.Db
             await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId)
                 .With("Report", chanId)
                 ).RunAsync(conn);
+        }
+
+        public async Task UpdateGuildStaffRoles(string guildId, string roles)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId)
+                .With("StaffRoles", roles)
+                ).RunAsync(conn);
+        }
+
+        public async Task UpdateGuildAdminRoles(string guildId, string roles)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId)
+                .With("AdminRoles", roles)
+                ).RunAsync(conn);
+        }
+
+        public async Task<bool> IsAdmin(string guildId, string userId)
+        {
+            string roles = (string)(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn)).AdminRoles;
+            if (roles == "none")
+                return false;
+            return roles.Split('|').Contains(userId);
+        }
+
+        public async Task<bool> IsStaff(string guildId, string userId)
+        {
+            string roles = (string)(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn)).StaffRoles;
+            if (roles == "none")
+                return false;
+            return roles.Split('|').Contains(userId);
         }
 
         public async Task<string> GetGuild(ulong guildId)

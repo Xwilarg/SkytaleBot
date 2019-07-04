@@ -49,6 +49,7 @@ namespace SkytaleBot
 
             await commands.AddModuleAsync<Modules.Communication>(null);
             await commands.AddModuleAsync<Modules.Settings>(null);
+            await commands.AddModuleAsync<Modules.Information>(null);
 
             if (!File.Exists("Keys/Credentials.json"))
                 throw new FileNotFoundException("You must have a Credentials.json located in a 'Keys' folder near your executable.\nIt must contains a KeyValue botToken containing the token of your bot");
@@ -97,6 +98,11 @@ namespace SkytaleBot
             int pos = 0;
             if (msg.HasMentionPrefix(client.CurrentUser, ref pos) || msg.HasStringPrefix("s.", ref pos))
             {
+                if (arg.Channel as ITextChannel == null)
+                {
+                    await arg.Channel.SendMessageAsync("I can't answer to commands in private message.");
+                    return;
+                }
                 SocketCommandContext context = new SocketCommandContext(client, msg);
                 IResult res = await commands.ExecuteAsync(context, pos, null);
                 if (res.IsSuccess && websiteCredentials != null)
