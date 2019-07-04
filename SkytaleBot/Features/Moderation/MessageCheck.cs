@@ -11,15 +11,15 @@ namespace SkytaleBot.Features.Moderation
 {
     public static class MessageCheck
     {
-        public static async Task<bool> CheckMessageText(SocketUserMessage msg)
+        public static async Task<bool> CheckMessageText(string msg)
         {
-            if (msg.Content.Length == 0)
+            if (msg.Length == 0)
                 return false;
             dynamic json;
             using (HttpClient hc = new HttpClient())
             {
                 HttpResponseMessage post = await hc.PostAsync("https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=" + Program.P.PerspectiveApi, new StringContent(
-                        JsonConvert.DeserializeObject("{comment: {text: \"" + Utils.EscapeString(msg.Content) + "\"},"
+                        JsonConvert.DeserializeObject("{comment: {text: \"" + Utils.EscapeString(msg) + "\"},"
                                                     + "languages: [\"en\"],"
                                                     + "requestedAttributes: {" + string.Join(":{}, ", categories.Select(x => x.Item1)) + ":{}} }").ToString(), Encoding.UTF8, "application/json"));
 

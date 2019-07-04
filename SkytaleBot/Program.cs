@@ -2,6 +2,8 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using DiscordUtils;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Translation.V2;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -22,6 +24,7 @@ namespace SkytaleBot
         public Random Rand { private set; get; }
         public string PerspectiveApi { private set; get; }
         public Db.Db BotDb { private set; get; }
+        public TranslationClient TClient { private set; get; }
 
         private Tuple<string, string> websiteCredentials;
 
@@ -61,6 +64,10 @@ namespace SkytaleBot
             else
                 websiteCredentials = null;
             PerspectiveApi = json.perspectiveToken;
+            if (json.googleAPIJson != null)
+                TClient = TranslationClient.Create(GoogleCredential.FromFile((string)json.googleAPIJson));
+            else
+                TClient = null;
 
             await client.LoginAsync(TokenType.Bot, (string)json.botToken);
             StartTime = DateTime.Now;
@@ -109,14 +116,11 @@ namespace SkytaleBot
                 {
                     await Utils.WebsiteUpdate("SkytaleBot", websiteCredentials.Item1, websiteCredentials.Item2, "nbMsgs", "1");
                 }
-                else if (!res.IsSuccess)
-                {
-                    if (await Features.Moderation.MessageCheck.CheckMessageText(msg))
-                        await msg.AddReactionAsync(new Emoji("❗"));
-                }
+                else if (!res.IsSuccess && await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText))
+                        await msg.AddReactionAsync(new Emoji("❕"));
             }
-            else if (await Features.Moderation.MessageCheck.CheckMessageText(msg))
-                await msg.AddReactionAsync(new Emoji("❗"));
+            else if (await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText))
+                    await msg.AddReactionAsync(new Emoji("❕"));
         }
     }
 }
