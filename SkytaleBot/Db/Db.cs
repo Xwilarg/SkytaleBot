@@ -75,6 +75,11 @@ namespace SkytaleBot.Db
             return roles.Split('|').Contains(userId);
         }
 
+        public async Task<string> GetReportChanId(string guildId)
+        {
+            return (await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn)).Report;
+        }
+
         public async Task<string> GetGuild(ulong guildId)
         {
             return JsonConvert.SerializeObject(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn));

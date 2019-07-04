@@ -11,10 +11,10 @@ namespace SkytaleBot.Features.Moderation
 {
     public static class MessageCheck
     {
-        public static async Task<bool> CheckMessageText(string msg)
+        public static async Task<MessageError?> CheckMessageText(string msg)
         {
             if (msg.Length == 0)
-                return false;
+                return null;
             dynamic json;
             using (HttpClient hc = new HttpClient())
             {
@@ -27,11 +27,23 @@ namespace SkytaleBot.Features.Moderation
             }
             foreach (var s in categories)
             {
-                double value = json.attributeScores[s.Item1].summaryScore.value;
+                float value = json.attributeScores[s.Item1].summaryScore.value;
                 if (value >= s.Item2)
-                    return true;
+                    return new MessageError
+                    {
+                        currValue = value,
+                        flag = s.Item1,
+                        maxValue = s.Item2
+                    };
             }
-            return false;
+            return null;
+        }
+
+        public struct MessageError
+        {
+            public string flag;
+            public float currValue;
+            public float maxValue;
         }
 
         private static readonly Tuple<string, float>[] categories = new Tuple<string, float>[] {

@@ -113,14 +113,34 @@ namespace SkytaleBot
                 SocketCommandContext context = new SocketCommandContext(client, msg);
                 IResult res = await commands.ExecuteAsync(context, pos, null);
                 if (res.IsSuccess && websiteCredentials != null)
-                {
                     await Utils.WebsiteUpdate("SkytaleBot", websiteCredentials.Item1, websiteCredentials.Item2, "nbMsgs", "1");
-                }
-                else if (!res.IsSuccess && await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText))
-                        await msg.AddReactionAsync(new Emoji("❕"));
+                else if (!res.IsSuccess)
+                    await SendReport(await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText), ((ITextChannel)msg.Channel).Guild, msg.Author, msg.Content);
             }
-            else if (await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText))
-                    await msg.AddReactionAsync(new Emoji("❕"));
+            else
+                await SendReport(await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText), ((ITextChannel)msg.Channel).Guild, msg.Author, msg.Content);
+        }
+
+        private async Task SendReport(Features.Moderation.MessageCheck.MessageError? res, IGuild guild, IUser author, string message)
+        {
+            if (res == null)
+                return;
+            string id = await BotDb.GetReportChanId(guild.Id.ToString());
+            if (id == "None")
+                return;
+            ITextChannel chan = await guild.GetTextChannelAsync(ulong.Parse(id));
+            if (chan == null)
+                return;
+            await chan.SendMessageAsync("", false, new EmbedBuilder
+            {
+                Title = "A message from " + author.ToString() + " was reported",
+                Description = message,
+                Color = Color.Red,
+                Footer = new EmbedFooterBuilder()
+                {
+                    Text = "This message triggered the flag " + res.Value.flag + " with a score of " + res.Value.currValue.ToString("0.00") + " out of " + res.Value.maxValue.ToString("0.00") + "."
+                }
+            }.Build());
         }
     }
 }
