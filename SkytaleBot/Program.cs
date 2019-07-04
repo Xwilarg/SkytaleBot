@@ -138,7 +138,7 @@ namespace SkytaleBot
                 Color = Color.Red,
                 Footer = new EmbedFooterBuilder()
                 {
-                    Text = "This message triggered the flag " + res.Value.flag + " with a score of " + res.Value.currValue.ToString("0.00") + " out of " + res.Value.maxValue.ToString("0.00") + "."
+                    Text = "This message triggered the flag " + res.Value.flag + ", breaking the limit of " + res.Value.maxValue.ToString("0.00") + " with a score of " + res.Value.currValue.ToString("0.00") + "."
                 }
             }.Build());
         }
