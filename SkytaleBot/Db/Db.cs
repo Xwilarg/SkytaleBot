@@ -80,9 +80,9 @@ namespace SkytaleBot.Db
             return (await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn)).Report;
         }
 
-        public async Task<string> GetGuild(ulong guildId)
+        public async Task<dynamic> GetGuild(ulong guildId)
         {
-            return JsonConvert.SerializeObject(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn));
+            return await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn);
         }
 
         private RethinkDB R;

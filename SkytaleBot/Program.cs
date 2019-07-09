@@ -50,7 +50,6 @@ namespace SkytaleBot
             client.GuildAvailable += GuildUpdate;
             client.JoinedGuild += GuildUpdate;
 
-            await commands.AddModuleAsync<Modules.Communication>(null);
             await commands.AddModuleAsync<Modules.Settings>(null);
             await commands.AddModuleAsync<Modules.Information>(null);
 
