@@ -59,20 +59,20 @@ namespace SkytaleBot.Db
                 ).RunAsync(conn);
         }
 
-        public async Task<bool> IsAdmin(string guildId, string userId)
+        public async Task<bool> IsAdmin(string guildId, string[] rolesId)
         {
             string roles = (string)(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn)).AdminRoles;
             if (roles == "none")
                 return false;
-            return roles.Split('|').Contains(userId);
+            return roles.Split('|').Any(x => rolesId.Contains(x));
         }
 
-        public async Task<bool> IsStaff(string guildId, string userId)
+        public async Task<bool> IsStaff(string guildId, string[] rolesId)
         {
             string roles = (string)(await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn)).StaffRoles;
             if (roles == "none")
                 return false;
-            return roles.Split('|').Contains(userId);
+            return roles.Split('|').Any(x => rolesId.Contains(x));
         }
 
         public async Task<string> GetReportChanId(string guildId)

@@ -81,9 +81,9 @@ namespace SkytaleBot.Modules
         }
 
         public static async Task<bool> IsAdmin(IGuildUser user)
-            => user.Id == user.Guild.OwnerId || await Program.P.BotDb.IsAdmin(user.GuildId.ToString(), user.Id.ToString());
+            => user.Id == user.Guild.OwnerId || await Program.P.BotDb.IsAdmin(user.GuildId.ToString(), user.RoleIds.Select(x => x.ToString()).ToArray());
 
         public static async Task<bool> IsStaff(IGuildUser user)
-            => await IsAdmin(user) || await Program.P.BotDb.IsStaff(user.GuildId.ToString(), user.Id.ToString());
+            => await IsAdmin(user) || await Program.P.BotDb.IsStaff(user.GuildId.ToString(), user.RoleIds.Select(x => x.ToString()).ToArray());
     }
 }
