@@ -27,6 +27,7 @@ namespace SkytaleBot.Modules
             await Context.User.SendMessageAsync("", false, new EmbedBuilder
             {
                 Title = "Status",
+                Color = Color.Blue,
                 Fields = new List<EmbedFieldBuilder>
                 {
                     new EmbedFieldBuilder()
@@ -58,14 +59,19 @@ namespace SkytaleBot.Modules
                     new EmbedFieldBuilder()
                     {
                         Name = "Report channel",
-                        Value = json.Report == "None" ? // TODO
-                            "None" : () => {
-                                ITextChannel chan = await Context.Guild.GetTextChannelAsync(ulong.Parse(x));
-                                return chan == null ? "Unknown (" + x + ")" : chan.ToString() + " (" + x + ")"; }))
+                        Value = await GetReportChanValue((string)json.Report)
                     }
                 }
             }.Build());
-            await Program.P.BotDb.GetGuild(Context.Guild.Id);
+            await ReplyAsync("Please check your PM.");
+        }
+
+        private async Task<string> GetReportChanValue(string input)
+        {
+            if (input == "None")
+                return "None";
+            ITextChannel chan = await Context.Guild.GetTextChannelAsync(ulong.Parse(input));
+            return chan == null ? "Unknown (" + input + ")" : chan.ToString() + " (" + input + ")";
         }
     }
 }
