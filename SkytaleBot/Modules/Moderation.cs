@@ -26,7 +26,7 @@ namespace SkytaleBot.Modules
                 await ReplyAsync("I don't have the permission to kick people");
                 return;
             }
-            if (Features.Moderation.KickBanCheck.HighestRole(await Context.Guild.GetCurrentUserAsync()) <= Features.Moderation.KickBanCheck.HighestRole(user))
+            if (!Features.Moderation.KickBanCheck.HaveHighestRole(await Context.Guild.GetCurrentUserAsync(), user))
             {
                 await ReplyAsync("I can't kick this user.");
                 return;
@@ -54,7 +54,7 @@ namespace SkytaleBot.Modules
                 await ReplyAsync("I don't have the permission to kick people");
                 return;
             }
-            if (Features.Moderation.KickBanCheck.HighestRole(await Context.Guild.GetCurrentUserAsync()) <= Features.Moderation.KickBanCheck.HighestRole(user))
+            if (!Features.Moderation.KickBanCheck.HaveHighestRole(await Context.Guild.GetCurrentUserAsync(), user))
             {
                 await ReplyAsync("I can't kick this user.");
                 return;
