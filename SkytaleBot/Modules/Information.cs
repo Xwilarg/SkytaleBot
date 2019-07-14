@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using DiscordUtils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,6 +61,14 @@ namespace SkytaleBot.Modules
                     {
                         Name = "Report channel",
                         Value = await GetReportChanValue((string)json.Report)
+                    },
+                    new EmbedFieldBuilder()
+                    {
+                        Name = "Moderation",
+                        Value =
+                            "Kick: " + (await Features.Moderation.KickBanCheck.CanKick(Context.Guild) ? "Yes" : "No") + Environment.NewLine +
+                            "Ban: " + (await Features.Moderation.KickBanCheck.CanBan(Context.Guild) ? "Yes" : "No") + Environment.NewLine +
+                            "Highest position: " + Features.Moderation.KickBanCheck.HighestRole(await Context.Guild.GetCurrentUserAsync())
                     }
                 }
             }.Build());

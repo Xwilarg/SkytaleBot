@@ -240,6 +240,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Db\Db.cs" />
+    <Compile Include="Features\Moderation\KickBanCheck.cs" />
     <Compile Include="Features\Moderation\MessageCheck.cs" />
     <Compile Include="Modules\Information.cs" />
     <Compile Include="Modules\Settings.cs" />
