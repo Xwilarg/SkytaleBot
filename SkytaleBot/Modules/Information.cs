@@ -66,8 +66,8 @@ namespace SkytaleBot.Modules
                     {
                         Name = "Moderation",
                         Value =
-                            "Kick: " + (await Features.Moderation.KickBanCheck.CanKick(Context.Guild) ? "Yes" : "No") + Environment.NewLine +
-                            "Ban: " + (await Features.Moderation.KickBanCheck.CanBan(Context.Guild) ? "Yes" : "No") + Environment.NewLine +
+                            "Kick: " + (await Features.Moderation.KickBanCheck.CanKickAsync(Context.Guild) ? "Yes" : "No") + Environment.NewLine +
+                            "Ban: " + (await Features.Moderation.KickBanCheck.CanBanAsync(Context.Guild) ? "Yes" : "No") + Environment.NewLine +
                             "Highest position: " + Features.Moderation.KickBanCheck.HighestRole(await Context.Guild.GetCurrentUserAsync())
                     }
                 }

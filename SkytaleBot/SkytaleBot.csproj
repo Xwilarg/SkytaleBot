@@ -243,6 +243,7 @@
     <Compile Include="Features\Moderation\KickBanCheck.cs" />
     <Compile Include="Features\Moderation\MessageCheck.cs" />
     <Compile Include="Modules\Information.cs" />
+    <Compile Include="Modules\Moderation.cs" />
     <Compile Include="Modules\Settings.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -52,6 +52,7 @@ namespace SkytaleBot
 
             await commands.AddModuleAsync<Modules.Settings>(null);
             await commands.AddModuleAsync<Modules.Information>(null);
+            await commands.AddModuleAsync<Modules.Moderation>(null);
 
             if (!File.Exists("Keys/Credentials.json"))
                 throw new FileNotFoundException("You must have a Credentials.json located in a 'Keys' folder near your executable.\nIt must contains a KeyValue botToken containing the token of your bot");

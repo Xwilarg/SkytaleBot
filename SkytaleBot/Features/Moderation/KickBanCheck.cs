@@ -6,10 +6,10 @@ namespace SkytaleBot.Features.Moderation
 {
     public static class KickBanCheck
     {
-        public static async Task<bool> CanKick(IGuild guild)
+        public static async Task<bool> CanKickAsync(IGuild guild)
             => (await guild.GetCurrentUserAsync()).GuildPermissions.KickMembers;
 
-        public static async Task<bool> CanBan(IGuild guild)
+        public static async Task<bool> CanBanAsync(IGuild guild)
             => (await guild.GetCurrentUserAsync()).GuildPermissions.BanMembers;
 
         public static int HighestRole(IGuildUser user)
