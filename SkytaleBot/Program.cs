@@ -98,17 +98,8 @@ namespace SkytaleBot
                             if (reaction.Emote.Name == "♻")
                             {
                                 await msg.RemoveAllReactionsAsync();
-                                await msg.ModifyAsync(x => x.Embed = new EmbedBuilder
-                                {
-                                    Title = "Message from " + reportedUser.ToString() + " (" + reportedUser.Id + ") was deleted",
-                                    Color = Color.Red,
-                                    Fields = embed.Fields.Select(y => new EmbedFieldBuilder()
-                                    {
-                                        IsInline = y.Inline,
-                                        Name = y.Name,
-                                        Value = y.Value
-                                    }).ToList()
-                                }.Build());
+                                await msg.ModifyAsync(x => x.Embed =
+                                    CreateReportEmbed("Message from " + reportedUser.ToString() + " (" + reportedUser.Id + ") was deleted", embed, reportedUser, reaction.User.Value));
                                 var deleteMsg = await (await guild.GetTextChannelAsync((ulong)json.ChannelId)).GetMessageAsync((ulong)json.MessageId);
                                 if (deleteMsg != null) await deleteMsg.DeleteAsync();
                             }
@@ -120,17 +111,8 @@ namespace SkytaleBot
                                 {
                                     await reportedUser.SendMessageAsync("One of your message was reported for the following reason: " + (string)json.Flag);
                                     await msg.RemoveAllReactionsAsync();
-                                    await msg.ModifyAsync(x => x.Embed = new EmbedBuilder
-                                    {
-                                        Title = reportedUser.ToString() + " (" + reportedUser.Id + ") got a warning",
-                                        Color = Color.Red,
-                                        Fields = embed.Fields.Select(y => new EmbedFieldBuilder()
-                                        {
-                                            IsInline = y.Inline,
-                                            Name = y.Name,
-                                            Value = y.Value
-                                        }).ToList()
-                                    }.Build());
+                                    await msg.ModifyAsync(x => x.Embed =
+                                        CreateReportEmbed(reportedUser.ToString() + " (" + reportedUser.Id + ") got a warning", embed, reportedUser, reaction.User.Value));
                                     var deleteMsg = await (await guild.GetTextChannelAsync((ulong)json.ChannelId)).GetMessageAsync((ulong)json.MessageId);
                                     if (deleteMsg != null) await deleteMsg.DeleteAsync();
                                 }
@@ -143,17 +125,8 @@ namespace SkytaleBot
                                 {
                                     await reportedUser.KickAsync(embed.Footer.Value.Text + Environment.NewLine + embed.Description);
                                     await msg.RemoveAllReactionsAsync();
-                                    await msg.ModifyAsync(x => x.Embed = new EmbedBuilder
-                                    {
-                                        Title = reportedUser.ToString() + " (" + reportedUser.Id + ") was kicked",
-                                        Color = Color.Red,
-                                        Fields = embed.Fields.Select(y => new EmbedFieldBuilder()
-                                        {
-                                            IsInline = y.Inline,
-                                            Name = y.Name,
-                                            Value = y.Value
-                                        }).ToList()
-                                    }.Build());
+                                    await msg.ModifyAsync(x => x.Embed =
+                                        CreateReportEmbed(reportedUser.ToString() + " (" + reportedUser.Id + ") was kicked", embed, reportedUser, reaction.User.Value));
                                     var deleteMsg = await (await guild.GetTextChannelAsync((ulong)json.ChannelId)).GetMessageAsync((ulong)json.MessageId);
                                     if (deleteMsg != null) await deleteMsg.DeleteAsync();
                                 }
@@ -168,17 +141,8 @@ namespace SkytaleBot
                                 {
                                     await reportedUser.BanAsync(0, embed.Footer.Value.Text + Environment.NewLine + embed.Description);
                                     await msg.RemoveAllReactionsAsync();
-                                    await msg.ModifyAsync(x => x.Embed = new EmbedBuilder
-                                    {
-                                        Title = reportedUser.ToString() + " (" + reportedUser.Id + ") was banned",
-                                        Color = Color.Red,
-                                        Fields = embed.Fields.Select(y => new EmbedFieldBuilder()
-                                        {
-                                            IsInline = y.Inline,
-                                            Name = y.Name,
-                                            Value = y.Value
-                                        }).ToList()
-                                    }.Build());
+                                    await msg.ModifyAsync(x => x.Embed =
+                                        CreateReportEmbed(reportedUser.ToString() + " (" + reportedUser.Id + ") was banned", embed, reportedUser, reaction.User.Value));
                                     var deleteMsg = await (await guild.GetTextChannelAsync((ulong)json.ChannelId)).GetMessageAsync((ulong)json.MessageId);
                                     if (deleteMsg != null) await deleteMsg.DeleteAsync();
                                 }
@@ -196,6 +160,29 @@ namespace SkytaleBot
                 await reaction.User.Value.SendMessageAsync("An internal error happened while doing moderation using emotes." + Environment.NewLine +
                     "Here are the technical information: " + e.ToString());
             }
+        }
+
+        private Embed CreateReportEmbed(string message, IEmbed embed, IGuildUser reportedUser, IUser me)
+        {
+            var fields = new List<EmbedFieldBuilder>();
+            fields.Add(new EmbedFieldBuilder
+            {
+                IsInline = true,
+                Name = "Admin",
+                Value = me.ToString()
+            });
+            fields.AddRange(embed.Fields.Select(y => new EmbedFieldBuilder()
+            {
+                IsInline = y.Inline,
+                Name = y.Name,
+                Value = y.Value
+            }).ToList());
+            return new EmbedBuilder
+            {
+                Title = message,
+                Color = Color.Red,
+                Fields = fields
+            }.Build();
         }
 
         private async Task GuildUpdate(SocketGuild arg)
