@@ -121,9 +121,9 @@ namespace SkytaleBot
                             {
                                 if (reportedUser == null)
                                     await reaction.User.Value.SendMessageAsync("I wasn't able to kick user " + reportedUser.ToString() + " because he is no longer in the guild.");
-                                else if (await Features.Moderation.KickBanCheck.CanKickAsync(guild) && Features.Moderation.KickBanCheck.HaveHighestRole((IGuildUser)reaction.User.Value, reportedUser))
+                                else if (await Features.Moderation.KickBanCheck.CanKickAsync(guild) && Features.Moderation.KickBanCheck.HaveHighestRole(await guild.GetCurrentUserAsync(), reportedUser))
                                 {
-                                    await reportedUser.KickAsync(embed.Footer.Value.Text + Environment.NewLine + embed.Description);
+                                    await reportedUser.KickAsync((string)json.Flag);
                                     await msg.RemoveAllReactionsAsync();
                                     await msg.ModifyAsync(x => x.Embed =
                                         CreateReportEmbed(reportedUser.ToString() + " (" + reportedUser.Id + ") was kicked", embed, reportedUser, reaction.User.Value));
@@ -137,15 +137,17 @@ namespace SkytaleBot
                             {
                                 if (reportedUser == null)
                                     await reaction.User.Value.SendMessageAsync("I wasn't able to ban user " + reportedUser.ToString() + " because he is no longer in the guild.");
-                                else
+                                else if (await Features.Moderation.KickBanCheck.CanBanAsync(guild) && Features.Moderation.KickBanCheck.HaveHighestRole(await guild.GetCurrentUserAsync(), reportedUser))
                                 {
-                                    await reportedUser.BanAsync(0, embed.Footer.Value.Text + Environment.NewLine + embed.Description);
+                                    await reportedUser.BanAsync(0, (string)json.Flag);
                                     await msg.RemoveAllReactionsAsync();
                                     await msg.ModifyAsync(x => x.Embed =
                                         CreateReportEmbed(reportedUser.ToString() + " (" + reportedUser.Id + ") was banned", embed, reportedUser, reaction.User.Value));
                                     var deleteMsg = await (await guild.GetTextChannelAsync((ulong)json.ChannelId)).GetMessageAsync((ulong)json.MessageId);
                                     if (deleteMsg != null) await deleteMsg.DeleteAsync();
                                 }
+                                else
+                                    await reaction.User.Value.SendMessageAsync("I wasn't able to ban user " + reportedUser.ToString() + ", I'm lacking the proper authorisations.");
                             }
                             else if (reaction.Emote.Name == "❌")
                             {
