@@ -32,6 +32,7 @@ namespace SkytaleBot.Modules
                 return;
             }
             await user.KickAsync(string.Join(" ", reason));
+            await user.SendMessageAsync("You were kicked from " + Context.Guild.Name + (reason.Length > 1 ? " for the following reason: " + string.Join(" ", reason) : "."));
             await ReplyAsync("User " + user.ToString() + " was kicked" + (reason.Length > 1 ? " for the following reason: " + string.Join(" ", reason) : "."));
         }
 
@@ -60,6 +61,7 @@ namespace SkytaleBot.Modules
                 return;
             }
             await user.BanAsync(0, string.Join(" ", reason));
+            await user.SendMessageAsync("You were banned from " + Context.Guild.Name + (reason.Length > 1 ? " for the following reason: " + string.Join(" ", reason) : "."));
             await ReplyAsync("User " + user.ToString() + " was banned" + (reason.Length > 1 ? " for the following reason: " + string.Join(" ", reason) : "."));
         }
     }

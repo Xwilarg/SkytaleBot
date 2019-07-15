@@ -123,6 +123,7 @@ namespace SkytaleBot
                                     await reaction.User.Value.SendMessageAsync("I wasn't able to kick user " + reportedUser.ToString() + " because he is no longer in the guild.");
                                 else if (await Features.Moderation.KickBanCheck.CanKickAsync(guild) && Features.Moderation.KickBanCheck.HaveHighestRole(await guild.GetCurrentUserAsync(), reportedUser))
                                 {
+                                    await reportedUser.SendMessageAsync("You were kicked from " + guild.Name + " for the following reason: " + (string)json.Flag);
                                     await reportedUser.KickAsync((string)json.Flag);
                                     await msg.RemoveAllReactionsAsync();
                                     await msg.ModifyAsync(x => x.Embed =
@@ -139,6 +140,7 @@ namespace SkytaleBot
                                     await reaction.User.Value.SendMessageAsync("I wasn't able to ban user " + reportedUser.ToString() + " because he is no longer in the guild.");
                                 else if (await Features.Moderation.KickBanCheck.CanBanAsync(guild) && Features.Moderation.KickBanCheck.HaveHighestRole(await guild.GetCurrentUserAsync(), reportedUser))
                                 {
+                                    await reportedUser.SendMessageAsync("You were banned from " + guild.Name + " for the following reason: " + (string)json.Flag);
                                     await reportedUser.BanAsync(0, (string)json.Flag);
                                     await msg.RemoveAllReactionsAsync();
                                     await msg.ModifyAsync(x => x.Embed =
