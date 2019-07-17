@@ -247,12 +247,14 @@ namespace SkytaleBot
             var msg = await chan.SendMessageAsync("", false, new EmbedBuilder
             {
                 Title = "A message from " + author.ToString() + " (" + author.Id + ") was reported",
+                Url = "https://discordapp.com/channels/" + guild.Id + "/" + chanId + "/" + msgId,
                 Description =
                     "♻: Delete message" + Environment.NewLine +
                     "⚠: Delete message and warn user" + Environment.NewLine +
                     "👢: Delete message and kick user" + Environment.NewLine +
                     "🔨: Delete message and ban user" + Environment.NewLine +
-                    "❌: Delete report" + Environment.NewLine,
+                    "❌: Delete report" + Environment.NewLine + Environment.NewLine +
+                    "Click on the title to jump to the message",
                 Color = Color.Red,
                 Fields = new List<EmbedFieldBuilder>()
                 {
