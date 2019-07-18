@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,6 +24,7 @@ namespace SkytaleBot.Db
                 await R.Db(dbName).TableCreate("Users").RunAsync(conn);
             if (!await R.Db(dbName).TableList().Contains("Guilds").RunAsync<bool>(conn))
                 await R.Db(dbName).TableCreate("Guilds").RunAsync(conn);
+            xps = new Dictionary<ulong, int>();
         }
 
         public async Task InitGuild(string guildId)
@@ -85,8 +87,34 @@ namespace SkytaleBot.Db
             return await R.Db(dbName).Table("Guilds").Get(guildId.ToString()).RunAsync(conn);
         }
 
+        public async Task GainXp(ulong userId, int ammount)
+        {
+            if (!xps.ContainsKey(userId))
+                await LoadUser(userId);
+            string userIdStr = userId.ToString();
+            xps[userId] = await R.Db(dbName).Table("Users").Get(R.HashMap("id", userIdStr)).GetField("Xp").Add(ammount).RunAsync<int>(conn);
+        }
+
+        public int GetXp(ulong userId)
+            => xps.ContainsKey(userId) ? xps[userId] : 0;
+
+        private async Task LoadUser(ulong userId)
+        {
+            string userIdStr = userId.ToString();
+            if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
+            {
+                xps.Add(userId, 0);
+                await R.Db(dbName).Table("Users").Update(R.HashMap("id", userIdStr)
+                    .With("Xp", 0)
+                    ).RunAsync(conn);
+            }
+            else
+                xps.Add(userId, (await R.Db(dbName).Table("Users").Get(userIdStr).RunAsync(conn)).Xp);
+        }
+
         private RethinkDB R;
         private Connection conn;
         private string dbName;
+        private Dictionary<ulong, int> xps;
     }
 }

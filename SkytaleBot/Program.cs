@@ -57,6 +57,7 @@ namespace SkytaleBot
             await commands.AddModuleAsync<Modules.Settings>(null);
             await commands.AddModuleAsync<Modules.Information>(null);
             await commands.AddModuleAsync<Modules.Moderation>(null);
+            await commands.AddModuleAsync<Modules.Leveling>(null);
 
             if (!File.Exists("Keys/Credentials.json"))
                 throw new FileNotFoundException("You must have a Credentials.json located in a 'Keys' folder near your executable.\nIt must contains a KeyValue botToken containing the token of your bot");
@@ -232,6 +233,26 @@ namespace SkytaleBot
             }
             else
                 await SendReport(await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText), ((ITextChannel)msg.Channel).Guild, msg.Author, msg.Content, msg.Id, msg.Channel.Id);
+            if (msg.Content.Length > 0)
+            {
+                int value = Clamp((int)Math.Round(msg.Content.Length / 40f), 1, 5);
+                await BotDb.GainXp(msg.Author.Id, value);
+                switch (value)
+                {
+                    case 1: await msg.AddReactionAsync(new Emoji("1⃣")); break;
+                    case 2: await msg.AddReactionAsync(new Emoji("2⃣")); break;
+                    case 3: await msg.AddReactionAsync(new Emoji("3⃣")); break;
+                    case 4: await msg.AddReactionAsync(new Emoji("4⃣")); break;
+                    case 5: await msg.AddReactionAsync(new Emoji("5⃣")); break;
+                }
+            }
+        }
+
+        private int Clamp(int val, int min, int max)
+        {
+            if (val < min) return min;
+            if (val > max) return max;
+            return val;
         }
 
         private async Task SendReport(Features.Moderation.MessageCheck.MessageError? res, IGuild guild, IUser author, string message, ulong msgId, ulong chanId)
