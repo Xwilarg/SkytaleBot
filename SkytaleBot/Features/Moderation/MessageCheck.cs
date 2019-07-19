@@ -51,7 +51,7 @@ namespace SkytaleBot.Features.Moderation
             new Tuple<string, float>("IDENTITY_ATTACK", .70f),
             new Tuple<string, float>("INSULT", .70f),
             new Tuple<string, float>("THREAT", .70f),
-            new Tuple<string, float>("OBSCENE", .70f),
+            new Tuple<string, float>("OBSCENE", .95f),
             new Tuple<string, float>("INFLAMMATORY", .70f),
             new Tuple<string, float>("PROFANITY", .70f)
         };
