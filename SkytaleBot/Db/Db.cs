@@ -92,7 +92,7 @@ namespace SkytaleBot.Db
             if (!xps.ContainsKey(userId))
                 await LoadUser(userId);
             string userIdStr = userId.ToString();
-            xps[userId] = await R.Db(dbName).Table("Users").Get(R.HashMap("id", userIdStr)).GetField("Xp").Add(ammount).RunAsync<int>(conn);
+            xps[userId] = await R.Db(dbName).Table("Users").Get(userIdStr).GetField("Xp").Add(ammount).RunAsync<int>(conn);
         }
 
         public int GetXp(ulong userId)
@@ -104,12 +104,12 @@ namespace SkytaleBot.Db
             if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
             {
                 xps.Add(userId, 0);
-                await R.Db(dbName).Table("Users").Update(R.HashMap("id", userIdStr)
+                await R.Db(dbName).Table("Users").Insert(R.HashMap("id", userIdStr)
                     .With("Xp", 0)
                     ).RunAsync(conn);
             }
             else
-                xps.Add(userId, (await R.Db(dbName).Table("Users").Get(userIdStr).RunAsync(conn)).Xp);
+                xps.Add(userId, (int)(await R.Db(dbName).Table("Users").Get(userIdStr).RunAsync(conn)).Xp);
         }
 
         private RethinkDB R;

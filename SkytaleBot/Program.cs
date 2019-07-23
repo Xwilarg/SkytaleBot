@@ -234,7 +234,7 @@ namespace SkytaleBot
                 await SendReport(await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText), ((ITextChannel)msg.Channel).Guild, msg.Author, msg.Content, msg.Id, msg.Channel.Id);
             if (msg.Content.Length > 0)
             {
-                int value = Clamp((int)Math.Round(msg.Content.Length / 40f), 1, 5);
+                int value = Clamp((int)Math.Round(msg.Content.Length / 20f), 1, 5);
                 await BotDb.GainXp(msg.Author.Id, value);
                 switch (value)
                 {
