@@ -235,15 +235,25 @@ namespace SkytaleBot
             if (msg.Content.Length > 0)
             {
                 int value = Clamp((int)Math.Round(msg.Content.Length / 20f), 1, 5);
-                await BotDb.GainXp(msg.Author.Id, value);
-                switch (value)
+                // We add a bit of random to make things harder to guess
+                // But at the same time we want to encourage long messages
+                int randomEntropy = Rand.Next(100);
+                if (value > 2)
                 {
-                    case 1: await msg.AddReactionAsync(new Emoji("1⃣")); break;
-                    case 2: await msg.AddReactionAsync(new Emoji("2⃣")); break;
-                    case 3: await msg.AddReactionAsync(new Emoji("3⃣")); break;
-                    case 4: await msg.AddReactionAsync(new Emoji("4⃣")); break;
-                    case 5: await msg.AddReactionAsync(new Emoji("5⃣")); break;
+                    if (randomEntropy < 5)
+                        value += 2;
+                    else if (randomEntropy < 20)
+                        value++;
                 }
+                else
+                {
+                    if (randomEntropy < 20)
+                        value--;
+                }
+                int oldXp = await BotDb.GetXp(msg.Author.Id);
+                if (oldXp / Modules.Leveling.xpPerLevel < (oldXp + value) / Modules.Leveling.xpPerLevel)
+                    await msg.AddReactionAsync(new Emoji("🎉"));
+                await BotDb.GainXp(msg.Author.Id, value);
             }
         }
 

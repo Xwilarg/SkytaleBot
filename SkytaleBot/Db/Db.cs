@@ -93,10 +93,17 @@ namespace SkytaleBot.Db
                 await LoadUser(userId);
             string userIdStr = userId.ToString();
             xps[userId] = await R.Db(dbName).Table("Users").Get(userIdStr).GetField("Xp").Add(ammount).RunAsync<int>(conn);
+            await R.Db(dbName).Table("Users").Update(R.HashMap("id", userIdStr)
+                .With("Xp", xps[userId])
+                ).RunAsync(conn);
         }
 
-        public int GetXp(ulong userId)
-            => xps.ContainsKey(userId) ? xps[userId] : 0;
+        public async Task<int> GetXp(ulong userId)
+        {
+            if (!xps.ContainsKey(userId))
+                await LoadUser(userId);
+            return xps[userId];
+        }
 
         private async Task LoadUser(ulong userId)
         {
