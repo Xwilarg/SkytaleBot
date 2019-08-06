@@ -251,7 +251,7 @@ namespace SkytaleBot
                         value--;
                 }
                 int oldXp = await BotDb.GetXp(msg.Author.Id);
-                if (oldXp / Modules.Leveling.xpPerLevel < (oldXp + value) / Modules.Leveling.xpPerLevel)
+                if (Modules.Leveling.GetLevelFromXp(oldXp) < Modules.Leveling.GetLevelFromXp(oldXp + value))
                     await msg.AddReactionAsync(new Emoji("🎉"));
                 await BotDb.GainXp(msg.Author.Id, value);
             }
