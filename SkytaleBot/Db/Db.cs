@@ -25,6 +25,7 @@ namespace SkytaleBot.Db
             if (!await R.Db(dbName).TableList().Contains("Guilds").RunAsync<bool>(conn))
                 await R.Db(dbName).TableCreate("Guilds").RunAsync(conn);
             xps = new Dictionary<ulong, int>();
+            money = new Dictionary<ulong, int>();
         }
 
         public async Task InitGuild(string guildId)
@@ -98,11 +99,29 @@ namespace SkytaleBot.Db
                 ).RunAsync(conn);
         }
 
+        public async Task GainMoney(ulong userId, int ammount)
+        {
+            if (!xps.ContainsKey(userId))
+                await LoadUser(userId);
+            string userIdStr = userId.ToString();
+            money[userId] = await R.Db(dbName).Table("Users").Get(userIdStr).GetField("Money").Add(ammount).RunAsync<int>(conn);
+            await R.Db(dbName).Table("Users").Update(R.HashMap("id", userIdStr)
+                .With("Money", money[userId])
+                ).RunAsync(conn);
+        }
+
         public async Task<int> GetXp(ulong userId)
         {
             if (!xps.ContainsKey(userId))
                 await LoadUser(userId);
             return xps[userId];
+        }
+
+        public async Task<int> GetMoney(ulong userId)
+        {
+            if (!money.ContainsKey(userId))
+                await LoadUser(userId);
+            return money[userId];
         }
 
         private async Task LoadUser(ulong userId)
@@ -111,17 +130,24 @@ namespace SkytaleBot.Db
             if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
             {
                 xps.Add(userId, 0);
+                money.Add(userId, 10);
                 await R.Db(dbName).Table("Users").Insert(R.HashMap("id", userIdStr)
                     .With("Xp", 0)
+                    .With("Money", 10)
+                    .With("Daily", "0")
                     ).RunAsync(conn);
             }
             else
+            {
                 xps.Add(userId, (int)(await R.Db(dbName).Table("Users").Get(userIdStr).RunAsync(conn)).Xp);
+                money.Add(userId, (int)(await R.Db(dbName).Table("Users").Get(userIdStr).RunAsync(conn)).Xp);
+            }
         }
 
         private RethinkDB R;
         private Connection conn;
         private string dbName;
         private Dictionary<ulong, int> xps;
+        private Dictionary<ulong, int> money;
     }
 }
