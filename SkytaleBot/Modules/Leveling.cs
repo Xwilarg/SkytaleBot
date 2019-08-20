@@ -15,6 +15,23 @@ namespace SkytaleBot.Modules
         public static int GetXpFromLevel(int level)
             => level * level * 10;
 
+        [Command("Daily")]
+        public async Task Daily()
+        {
+            double daily = await Program.P.BotDb.CanDoDaily(Context.User.Id);
+            if (daily < 0)
+            {
+                await Program.P.BotDb.ResetDaily(Context.User.Id);
+                await Program.P.BotDb.GainMoney(Context.User.Id, 20);
+                await ReplyAsync("You earned 20 daily money!");
+            }
+            else
+            {
+                DateTime dt = DateTime.Now.AddSeconds(daily);
+                await ReplyAsync("You must wait " + dt.Hour + " more hour.");
+            }
+        }
+
         [Command("Give")]
         public async Task Profile(string name, string amount)
         {

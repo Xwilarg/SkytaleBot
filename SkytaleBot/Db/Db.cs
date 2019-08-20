@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -123,6 +124,33 @@ namespace SkytaleBot.Db
                 await LoadUser(userId);
             return money[userId];
         }
+
+        /// <summary>
+        /// Return the time between next daily
+        /// If < 0 then time is expired
+        /// </summary>
+        public async Task<double> CanDoDaily(ulong userId)
+        {
+            string userIdStr = userId.ToString();
+            if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
+                return -1;
+            string daily = (await R.Db(dbName).Table("Users").Get(userIdStr).GetField("Daily").RunAsync<string>(conn));
+            if (daily == "0")
+                return -1;
+            return dailySecs - DateTime.Now.Subtract(DateTime.Parse(daily)).TotalSeconds;
+        }
+
+        public async Task ResetDaily(ulong userId)
+        {
+            string userIdStr = userId.ToString();
+            if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
+                await LoadUser(userId);
+            await R.Db(dbName).Table("Users").Update(R.HashMap("id", userIdStr)
+                .With("Daily", DateTime.Now.ToString())
+                ).RunAsync(conn);
+        }
+
+        private double dailySecs = 86400.0;
 
         private async Task LoadUser(ulong userId)
         {
