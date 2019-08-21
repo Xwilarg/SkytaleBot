@@ -137,7 +137,7 @@ namespace SkytaleBot.Db
             string daily = (await R.Db(dbName).Table("Users").Get(userIdStr).GetField("Daily").RunAsync<string>(conn));
             if (daily == "0")
                 return -1;
-            return dailySecs - DateTime.Now.Subtract(DateTime.Parse(daily)).TotalSeconds;
+            return DateTime.Parse(daily).Subtract(DateTime.Now).TotalSeconds;
         }
 
         public async Task ResetDaily(ulong userId)
@@ -146,7 +146,7 @@ namespace SkytaleBot.Db
             if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
                 await LoadUser(userId);
             await R.Db(dbName).Table("Users").Update(R.HashMap("id", userIdStr)
-                .With("Daily", DateTime.Now.ToString())
+                .With("Daily", DateTime.Now.AddSeconds(dailySecs).ToString())
                 ).RunAsync(conn);
         }
 

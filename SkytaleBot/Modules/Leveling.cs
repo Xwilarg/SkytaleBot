@@ -28,7 +28,7 @@ namespace SkytaleBot.Modules
             else
             {
                 DateTime dt = DateTime.Now.AddSeconds(daily);
-                await ReplyAsync("You must wait " + dt.Hour + " more hour.");
+                await ReplyAsync("You must wait " + dt.Subtract(DateTime.Now).TotalHours.ToString("00") + " more hour.");
             }
         }
 
