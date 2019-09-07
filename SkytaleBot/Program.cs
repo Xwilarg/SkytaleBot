@@ -234,26 +234,15 @@ namespace SkytaleBot
                 await SendReport(await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText), ((ITextChannel)msg.Channel).Guild, msg.Author, msg.Content, msg.Id, msg.Channel.Id);
             if (msg.Content.Length > 0)
             {
-                int value = Clamp((int)Math.Round(msg.Content.Length / 20f), 1, 5);
-                // We add a bit of random to make things harder to guess
-                // But at the same time we want to encourage long messages
-                int randomEntropy = Rand.Next(100);
-                if (value > 2)
+                if (await BotDb.CanDoXp(msg.Author.Id) < 0)
                 {
-                    if (randomEntropy < 5)
-                        value += 2;
-                    else if (randomEntropy < 20)
-                        value++;
+                    int value = Rand.Next(2, 4);
+                    int oldXp = await BotDb.GetXp(msg.Author.Id);
+                    if (Modules.Leveling.GetLevelFromXp(oldXp) < Modules.Leveling.GetLevelFromXp(oldXp + value))
+                        await msg.AddReactionAsync(new Emoji("🎉"));
+                    await BotDb.GainXp(msg.Author.Id, value);
+                    await BotDb.ResetXp(msg.Author.Id);
                 }
-                else
-                {
-                    if (randomEntropy < 20)
-                        value--;
-                }
-                int oldXp = await BotDb.GetXp(msg.Author.Id);
-                if (Modules.Leveling.GetLevelFromXp(oldXp) < Modules.Leveling.GetLevelFromXp(oldXp + value))
-                    await msg.AddReactionAsync(new Emoji("🎉"));
-                await BotDb.GainXp(msg.Author.Id, value);
             }
         }
 

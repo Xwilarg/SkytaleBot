@@ -130,27 +130,40 @@ namespace SkytaleBot.Db
         /// If < 0 then time is expired
         /// </summary>
         public async Task<double> CanDoDaily(ulong userId)
+            => await CanDoInternal(userId, "Daily");
+
+        public async Task<double> CanDoXp(ulong userId)
+            => await CanDoInternal(userId, "WaitXp");
+
+        private async Task<double> CanDoInternal(ulong userId, string dbEntry)
         {
             string userIdStr = userId.ToString();
             if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
                 return -1;
-            string daily = (await R.Db(dbName).Table("Users").Get(userIdStr).GetField("Daily").RunAsync<string>(conn));
+            string daily = (await R.Db(dbName).Table("Users").Get(userIdStr).GetField(dbEntry).RunAsync<string>(conn));
             if (daily == "0")
                 return -1;
             return DateTime.Parse(daily).Subtract(DateTime.Now).TotalSeconds;
         }
 
         public async Task ResetDaily(ulong userId)
+            => await ResetInternal(userId, "Daily", dailySecs);
+
+        public async Task ResetXp(ulong userId)
+            => await ResetInternal(userId, "WaitXp", secsBeforeNextMessage);
+
+        private async Task ResetInternal(ulong userId, string dbEntry, double value)
         {
             string userIdStr = userId.ToString();
             if (await R.Db(dbName).Table("Users").GetAll(userIdStr).Count().Eq(0).RunAsync<bool>(conn))
                 await LoadUser(userId);
             await R.Db(dbName).Table("Users").Update(R.HashMap("id", userIdStr)
-                .With("Daily", DateTime.Now.AddSeconds(dailySecs).ToString())
+                .With(dbEntry, DateTime.Now.AddSeconds(value).ToString())
                 ).RunAsync(conn);
         }
 
         private double dailySecs = 86400.0;
+        private double secsBeforeNextMessage = 900.0; // 15 minutes
 
         private async Task LoadUser(ulong userId)
         {
@@ -163,6 +176,7 @@ namespace SkytaleBot.Db
                     .With("Xp", 0)
                     .With("Money", 10)
                     .With("Daily", "0")
+                    .With("WaitXp", "0")
                     ).RunAsync(conn);
             }
             else
