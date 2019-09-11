@@ -21,10 +21,12 @@ namespace SkytaleBot.Db
             conn = await R.Connection().ConnectAsync();
             if (!await R.DbList().Contains(dbName).RunAsync<bool>(conn))
                 await R.DbCreate(dbName).RunAsync(conn);
-            if (!await R.Db(dbName).TableList().Contains("Users").RunAsync<bool>(conn))
+            if (!await R.Db(dbName).TableList().Contains("Users").RunAsync<bool>(conn)) // TODO: User XP must not be kept in a separate table
                 await R.Db(dbName).TableCreate("Users").RunAsync(conn);
             if (!await R.Db(dbName).TableList().Contains("Guilds").RunAsync<bool>(conn))
                 await R.Db(dbName).TableCreate("Guilds").RunAsync(conn);
+            if (!await R.Db(dbName).TableList().Contains("GuildsLevel").RunAsync<bool>(conn)) // Store roles granted for new levels
+                await R.Db(dbName).TableCreate("GuildsLevel").RunAsync(conn);
             xps = new Dictionary<ulong, int>();
             money = new Dictionary<ulong, int>();
         }
@@ -40,6 +42,23 @@ namespace SkytaleBot.Db
                     .With("AdminRoles", "None")
                     ).RunAsync(conn);
             }
+            if (await R.Db(dbName).Table("GuildsLevel").GetAll(guildIdStr).Count().Eq(0).RunAsync<bool>(conn))
+            {
+                await R.Db(dbName).Table("GuildsLevel").Insert(R.HashMap("id", guildIdStr)).RunAsync(conn);
+            }
+        }
+
+        public async Task SetRoleForLevel(ulong guildId, int level, ulong roleId)
+        {
+            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId)
+                .With(level.ToString(), roleId)
+                ).RunAsync(conn);
+        }
+
+        public async Task<ulong> GetRoleForLevel(ulong guildId, int level)
+        {
+            string guildIdStr = guildId.ToString();
+            return await R.Db(dbName).Table("GuildsLevel").Get(guildIdStr).GetField(level.ToString()).RunAsync<ulong>(conn);
         }
 
         public async Task UpdateGuildReport(string guildId, string chanId)

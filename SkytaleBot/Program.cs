@@ -238,8 +238,15 @@ namespace SkytaleBot
                 {
                     int value = Rand.Next(2, 4);
                     int oldXp = await BotDb.GetXp(msg.Author.Id);
-                    if (Modules.Leveling.GetLevelFromXp(oldXp) < Modules.Leveling.GetLevelFromXp(oldXp + value))
+                    int newLevel = Modules.Leveling.GetLevelFromXp(oldXp + value);
+                    if (Modules.Leveling.GetLevelFromXp(oldXp) < newLevel)
+                    {
                         await msg.AddReactionAsync(new Emoji("🎉"));
+                        IGuild guild = ((ITextChannel)msg.Channel).Guild;
+                        ulong id = await BotDb.GetRoleForLevel(guild.Id, newLevel);
+                        if (id != 0)
+                            await ((IGuildUser)msg.Author).AddRoleAsync(guild.GetRole(id));
+                    }
                     await BotDb.GainXp(msg.Author.Id, value);
                     await BotDb.ResetXp(msg.Author.Id);
                 }
