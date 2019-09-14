@@ -205,6 +205,17 @@ namespace SkytaleBot.Db
             }
         }
 
+        public async Task<List<string>> GetAllUsersAtThanLevel(int level)
+        {
+            List<string> users = new List<string>();
+            foreach (var user in await R.Db(dbName).Table("Users").RunAsync(conn))
+            {
+                if (Modules.Leveling.GetLevelFromXp((int)user.Xp) >= level)
+                    users.Add((string)user.id);
+            }
+            return users;
+        }
+
         private RethinkDB R;
         private Connection conn;
         private string dbName;

@@ -57,6 +57,43 @@ namespace SkytaleBot.Modules
             }
         }
 
+        [Command("Role")]
+        public async Task Role(params string[] args)
+        {
+            if (!await IsAdmin((IGuildUser)Context.User))
+            {
+                await ReplyAsync("Only an admin can do this command.");
+                return;
+            }
+            if (args.Length < 2)
+            {
+                await ReplyAsync("You must specify the level followed by the role to assign");
+                return;
+            }
+            int level;
+            if (!int.TryParse(args[0], out level) || level <= 0)
+            {
+                await ReplyAsync("The level given must be superior to 0.");
+                return;
+            }
+            IRole role = DiscordUtils.Utils.GetRole(string.Join(" ", args.Skip(1)), Context.Guild);
+            if (role != null)
+            {
+                await Program.P.BotDb.SetRoleForLevel(Context.Guild.Id, level, role.Id);
+                foreach (string s in await Program.P.BotDb.GetAllUsersAtThanLevel(level))
+                {
+                    IGuildUser user = await Context.Guild.GetUserAsync(ulong.Parse(s));
+                    if (user != null)
+                        await user.AddRoleAsync(role);
+                }
+                await ReplyAsync("Your role preferences for level " + level + " were updated.");
+            }
+            else
+            {
+                await ReplyAsync("You must specify the level followed by the role to assign");
+            }
+        }
+
         public async Task<string> GetRolesId(IGuildUser user, ITextChannel chan, string[] args)
         {
             if (user.Id != user.Guild.OwnerId)
