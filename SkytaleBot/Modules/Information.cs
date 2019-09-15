@@ -59,6 +59,11 @@ namespace SkytaleBot.Modules
                     },
                     new EmbedFieldBuilder()
                     {
+                        Name = "Roles",
+                        Value = Program.P.BotDb.GetAllRolesLevel(Context.Guild.Id)
+                    },
+                    new EmbedFieldBuilder()
+                    {
                         Name = "Report channel",
                         Value = await GetReportChanValue((string)json.Report)
                     },

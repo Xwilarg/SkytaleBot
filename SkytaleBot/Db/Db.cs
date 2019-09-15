@@ -61,6 +61,9 @@ namespace SkytaleBot.Db
             return await R.Db(dbName).Table("GuildsLevel").Get(guildIdStr).GetField(level.ToString()).RunAsync<ulong>(conn);
         }
 
+        public async Task<string> GetAllRolesLevel(ulong guildId)
+            => await R.Db(dbName).Table("GuildsLevel").Get(guildId.ToString()).RunAsync(conn);
+
         public async Task UpdateGuildReport(string guildId, string chanId)
         {
             await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId)
