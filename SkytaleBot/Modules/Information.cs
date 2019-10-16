@@ -60,7 +60,7 @@ namespace SkytaleBot.Modules
                     new EmbedFieldBuilder()
                     {
                         Name = "Roles",
-                        Value = Program.P.BotDb.GetAllRolesLevel(Context.Guild.Id)
+                        Value = await Program.P.BotDb.GetAllRolesLevel(Context.Guild.Id)
                     },
                     new EmbedFieldBuilder()
                     {

@@ -50,7 +50,13 @@ namespace SkytaleBot.Db
 
         public async Task SetRoleForLevel(ulong guildId, int level, ulong roleId)
         {
-            await R.Db(dbName).Table("Guilds").Update(R.HashMap("id", guildId)
+            string guildIdStr = guildId.ToString();
+            if (await R.Db(dbName).Table("Guilds").GetAll(guildIdStr).Count().Eq(0).RunAsync<bool>(conn))
+                await R.Db(dbName).Table("GuildsLevel").Insert(R.HashMap("id", guildIdStr)
+                .With(level.ToString(), roleId)
+                ).RunAsync(conn);
+            else
+                await R.Db(dbName).Table("GuildsLevel").Update(R.HashMap("id", guildIdStr)
                 .With(level.ToString(), roleId)
                 ).RunAsync(conn);
         }
@@ -62,7 +68,7 @@ namespace SkytaleBot.Db
         }
 
         public async Task<string> GetAllRolesLevel(ulong guildId)
-            => await R.Db(dbName).Table("GuildsLevel").Get(guildId.ToString()).RunAsync(conn);
+            => (await R.Db(dbName).Table("GuildsLevel").Get(guildId.ToString()).RunAsync(conn)).ToString();
 
         public async Task UpdateGuildReport(string guildId, string chanId)
         {
