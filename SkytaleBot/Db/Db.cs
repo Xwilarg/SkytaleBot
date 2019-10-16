@@ -191,7 +191,7 @@ namespace SkytaleBot.Db
         }
 
         private double dailySecs = 86400.0;
-        private double secsBeforeNextMessage = 900.0; // 15 minutes
+        private double secsBeforeNextMessage = 300.0; // 5 minutes
 
         private async Task LoadUser(ulong userId)
         {
