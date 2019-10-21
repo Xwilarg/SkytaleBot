@@ -227,10 +227,10 @@ namespace SkytaleBot
                 IResult res = await commands.ExecuteAsync(context, pos, null);
                 if (res.IsSuccess && websiteCredentials != null)
                     await Utils.WebsiteUpdate("SkytaleBot", websiteCredentials.Item1, websiteCredentials.Item2, "nbMsgs", "1");
-                else if (!res.IsSuccess)
+                else if (!res.IsSuccess && msg.Content.Length > 0)
                     await SendReport(await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText), ((ITextChannel)msg.Channel).Guild, msg.Author, msg.Content, msg.Id, msg.Channel.Id);
             }
-            else
+            else if (msg.Content.Length > 0)
                 await SendReport(await Features.Moderation.MessageCheck.CheckMessageText(TClient.TranslateText(msg.Content, "en").TranslatedText), ((ITextChannel)msg.Channel).Guild, msg.Author, msg.Content, msg.Id, msg.Channel.Id);
             if (msg.Content.Length > 0)
             {
@@ -243,14 +243,10 @@ namespace SkytaleBot
                     {
                         await msg.AddReactionAsync(new Emoji("🎉"));
                         IGuild guild = ((ITextChannel)msg.Channel).Guild;
-                        await msg.Author.SendMessageAsync("Congratulations, You reached level " + newLevel + " on " + guild.Name + "!");
+                        await msg.Author.SendMessageAsync("Félicitation, vous avez atteint le niveau " + newLevel + " dans " + guild.Name + " !");
                         ulong id = await BotDb.GetRoleForLevel(guild.Id, newLevel);
                         if (id != 0)
-                        {
-                            IRole role = guild.GetRole(id);
-                            await msg.Channel.SendMessageAsync(id.ToString());
-                            await ((IGuildUser)msg.Author).AddRoleAsync(role);
-                        }
+                            await ((IGuildUser)msg.Author).AddRoleAsync(guild.GetRole(id));
                     }
                     await BotDb.GainXp(msg.Author.Id, value);
                     await BotDb.ResetXp(msg.Author.Id);

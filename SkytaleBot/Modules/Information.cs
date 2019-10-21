@@ -10,6 +10,21 @@ namespace SkytaleBot.Modules
 {
     public class Information : ModuleBase
     {
+        [Command("Help")]
+        public async Task Help()
+        {
+            await ReplyAsync("", false, new EmbedBuilder
+            {
+                Title = "Help",
+                Color = Color.Blue,
+                Description =
+                "Profile [(optional) user]: See a user profile" + Environment.NewLine +
+                "Daily: Get your daily money" + Environment.NewLine +
+                "Give [user] [amount]: Give money to another user" + Environment.NewLine +
+                "Slot: Play the slot game (cost 5)"
+            }.Build());
+        }
+
         [Command("Info")]
         public async Task Info()
         {
