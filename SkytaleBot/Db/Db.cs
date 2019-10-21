@@ -53,18 +53,18 @@ namespace SkytaleBot.Db
             string guildIdStr = guildId.ToString();
             if (await R.Db(dbName).Table("Guilds").GetAll(guildIdStr).Count().Eq(0).RunAsync<bool>(conn))
                 await R.Db(dbName).Table("GuildsLevel").Insert(R.HashMap("id", guildIdStr)
-                .With(level.ToString(), roleId)
+                .With(level.ToString(), roleId.ToString())
                 ).RunAsync(conn);
             else
                 await R.Db(dbName).Table("GuildsLevel").Update(R.HashMap("id", guildIdStr)
-                .With(level.ToString(), roleId)
+                .With(level.ToString(), roleId.ToString())
                 ).RunAsync(conn);
         }
 
         public async Task<ulong> GetRoleForLevel(ulong guildId, int level)
         {
             string guildIdStr = guildId.ToString();
-            return await R.Db(dbName).Table("GuildsLevel").Get(guildIdStr).GetField(level.ToString()).RunAsync<ulong>(conn);
+            return ulong.Parse(await R.Db(dbName).Table("GuildsLevel").Get(guildIdStr).GetField(level.ToString()).RunAsync<string>(conn));
         }
 
         public async Task<string> GetAllRolesLevel(ulong guildId)

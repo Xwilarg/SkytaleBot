@@ -243,9 +243,14 @@ namespace SkytaleBot
                     {
                         await msg.AddReactionAsync(new Emoji("🎉"));
                         IGuild guild = ((ITextChannel)msg.Channel).Guild;
+                        await msg.Author.SendMessageAsync("Congratulations, You reached level " + newLevel + " on " + guild.Name + "!");
                         ulong id = await BotDb.GetRoleForLevel(guild.Id, newLevel);
                         if (id != 0)
-                            await ((IGuildUser)msg.Author).AddRoleAsync(guild.GetRole(id));
+                        {
+                            IRole role = guild.GetRole(id);
+                            await msg.Channel.SendMessageAsync(id.ToString());
+                            await ((IGuildUser)msg.Author).AddRoleAsync(role);
+                        }
                     }
                     await BotDb.GainXp(msg.Author.Id, value);
                     await BotDb.ResetXp(msg.Author.Id);
