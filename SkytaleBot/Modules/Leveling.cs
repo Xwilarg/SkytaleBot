@@ -10,10 +10,10 @@ namespace SkytaleBot.Modules
     public class Leveling : ModuleBase
     {
         public static int GetLevelFromXp(int xp)
-            => (int)Math.Sqrt(xp / 10);
+            => (int)Math.Sqrt(xp / 40);
 
         public static int GetXpFromLevel(int level)
-            => level * level * 10;
+            => level * level * 40;
 
         [Command("Daily")]
         public async Task Daily()
