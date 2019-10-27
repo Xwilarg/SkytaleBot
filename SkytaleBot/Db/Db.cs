@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using RethinkDb.Driver;
+﻿using RethinkDb.Driver;
 using RethinkDb.Driver.Net;
 using System;
 using System.Collections.Generic;
@@ -64,6 +63,8 @@ namespace SkytaleBot.Db
         public async Task<ulong> GetRoleForLevel(ulong guildId, int level)
         {
             string guildIdStr = guildId.ToString();
+            if (!await R.Db(dbName).Table("GuildsLevel").Get(guildIdStr).HasFields(level.ToString()).RunAsync<bool>(conn))
+                return 0;
             return ulong.Parse(await R.Db(dbName).Table("GuildsLevel").Get(guildIdStr).GetField(level.ToString()).RunAsync<string>(conn));
         }
 
